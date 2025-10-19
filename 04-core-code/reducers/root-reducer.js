@@ -43,6 +43,9 @@ function uiReducer(state, action) {
         case UI_ACTION_TYPES.SET_ACTIVE_TAB:
             return { ...state, activeTabId: action.payload.tabId };
         case UI_ACTION_TYPES.SET_ACTIVE_CELL:
+<ins>
+            console.log('[DEBUG] uiReducer: SET_ACTIVE_CELL', { payload: action.payload, beforeState: JSON.parse(JSON.stringify(state)) });
+</ins>
             return { ...state, activeCell: action.payload, inputMode: action.payload.column };
         case UI_ACTION_TYPES.SET_INPUT_VALUE:
             return { ...state, inputValue: String(action.payload.value || '') };
@@ -58,16 +61,28 @@ function uiReducer(state, action) {
             return { ...state, isMultiSelectMode: isEnteringMode, multiSelectSelectedIndexes: newSelectedIndexes, selectedRowIndex: null };
         }
         case UI_ACTION_TYPES.TOGGLE_MULTI_SELECT_SELECTION: {
+<ins>
+            console.log('[DEBUG] uiReducer: TOGGLE_MULTI_SELECT_SELECTION', { payload: action.payload, beforeState: JSON.parse(JSON.stringify(state)) });
+</ins>
             const selectedIndexes = new Set(state.multiSelectSelectedIndexes);
             if (selectedIndexes.has(action.payload.rowIndex)) {
                 selectedIndexes.delete(action.payload.rowIndex);
             } else {
                 selectedIndexes.add(action.payload.rowIndex);
             }
-            return { ...state, multiSelectSelectedIndexes: Array.from(selectedIndexes) };
+            const newState = { ...state, multiSelectSelectedIndexes: Array.from(selectedIndexes) };
+<ins>
+            console.log('[DEBUG] uiReducer: TOGGLE_MULTI_SELECT_SELECTION', { afterState: JSON.parse(JSON.stringify(newState)) });
+</ins>
+            return newState;
         }
         case UI_ACTION_TYPES.CLEAR_MULTI_SELECT_SELECTION:
-            return { ...state, multiSelectSelectedIndexes: [] };
+<ins>
+            console.log('[DEBUG] uiReducer: CLEAR_MULTI_SELECT_SELECTION', { beforeState: JSON.parse(JSON.stringify(state)) });
+            const newState = { ...state, multiSelectSelectedIndexes: [] };
+            console.log('[DEBUG] uiReducer: CLEAR_MULTI_SELECT_SELECTION', { afterState: JSON.parse(JSON.stringify(newState)) });
+            return newState;
+</ins>
         case UI_ACTION_TYPES.SET_ACTIVE_EDIT_MODE:
             return { ...state, activeEditMode: action.payload.mode };
         case UI_ACTION_TYPES.SET_TARGET_CELL:
