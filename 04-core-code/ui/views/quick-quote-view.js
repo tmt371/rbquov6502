@@ -181,8 +181,8 @@ export class QuickQuoteView {
             return;
         }
 
-        this.stateService.dispatch(uiActions.setActiveCell(rowIndex, column));
         this.stateService.dispatch(uiActions.clearMultiSelectSelection());
+        this.stateService.dispatch(uiActions.setActiveCell(rowIndex, column));
 
         const item = this._getItems()[rowIndex];
         if (item && (column === 'width' || column === 'height')) {
