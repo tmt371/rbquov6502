@@ -14,7 +14,7 @@ class App {
         
         const restoredData = migrationService.loadAndMigrateData();
         
-        // 將恢復的資料傳遞給AppContext 初始化
+        // [MODIFIED] Initialize only non-UI services first.
         this.appContext.initialize(restoredData);
     }
 
@@ -49,46 +49,45 @@ class App {
     async run() {
         console.log("Application starting...");
         
+        // Step 1: Load all HTML templates into the DOM.
         await this._loadPartials();
 
+        // Step 2: [NEW] Initialize all UI components now that their DOM elements exist.
+        this.appContext.initializeUIComponents();
+
+        // Step 3: Get all fully initialized instances from the context.
         const eventAggregator = this.appContext.get('eventAggregator');
         const calculationService = this.appContext.get('calculationService');
         const configManager = this.appContext.get('configManager');
         const appController = this.appContext.get('appController');
+        const rightPanelComponent = this.appContext.get('rightPanelComponent');
 
-        this.uiManager = new UIManager(
-            document.getElementById(DOM_IDS.APP),
+        // Step 4: Initialize the main UI manager.
+        this.uiManager = new UIManager({
+            appElement: document.getElementById(DOM_IDS.APP),
             eventAggregator,
-            calculationService
-        );
+            calculationService,
+            rightPanelComponent
+        });
 
+        // Step 5: Continue with the rest of the application startup.
         await configManager.initialize();
 
         eventAggregator.subscribe(EVENTS.STATE_CHANGED, (state) => {
             this.uiManager.render(state);
         });
-<ins>
-        console.log('[DEBUG] About to publish initial state. Current state:', JSON.parse(JSON.stringify(appController._getFullState())));
-</ins>
+
         appController.publishInitialState();
-<ins>
-        console.log('[DEBUG] Initial state has been published.');
-</ins>
+        
         this.inputHandler = new InputHandler(eventAggregator);
         this.inputHandler.initialize();
 
         eventAggregator.subscribe(EVENTS.APP_READY, () => {
-            // Re-introduce the timeout to allow the initial render to complete
-            // before trying to focus a cell.
             setTimeout(() => {
-<ins>
-                console.log('[DEBUG] APP_READY event fired. Publishing FOCUS_CELL for row 0, column width.');
-</ins>
                 eventAggregator.publish(EVENTS.FOCUS_CELL, { rowIndex: 0, column: 'width' });
             }, 100);
         });
 
-        // Publish the appReady event after all initializations are complete.
         eventAggregator.publish(EVENTS.APP_READY);
         
         console.log("Application running and interactive.");
