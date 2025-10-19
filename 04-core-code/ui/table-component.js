@@ -124,6 +124,9 @@ export class TableComponent {
                 cell.textContent = index + 1;
                 const isLastRowEmpty = (index === items.length - 1) && (!item.width && !item.height);
 
+                // Ensure no old classes persist
+                cell.classList.remove('selected-row-highlight', 'lf-selection-highlight', 'selection-disabled');
+
                 if (lfSelectedRowIndexes.includes(index)) {
                     cell.classList.add('lf-selection-highlight');
                 } else if (isLastRowEmpty) {
