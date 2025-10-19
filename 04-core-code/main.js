@@ -6,6 +6,7 @@ import { UIManager } from './ui/ui-manager.js';
 import { InputHandler } from './ui/input-handler.js';
 import { paths } from './config/paths.js';
 import { EVENTS, DOM_IDS } from './config/constants.js';
+import * as uiActions from './actions/ui-actions.js';
 
 class App {
     constructor() {
@@ -84,6 +85,8 @@ class App {
 
         eventAggregator.subscribe(EVENTS.APP_READY, () => {
             setTimeout(() => {
+                const stateService = this.appContext.get('stateService');
+                stateService.dispatch(uiActions.clearMultiSelectSelection());
                 eventAggregator.publish(EVENTS.FOCUS_CELL, { rowIndex: 0, column: 'width' });
             }, 100);
         });
