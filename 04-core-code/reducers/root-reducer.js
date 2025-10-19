@@ -186,6 +186,7 @@ function quoteReducer(state, action, { productFactory, configManager }) {
             const { selectedIndex } = action.payload;
             const itemToDelete = items[selectedIndex];
             if (!itemToDelete) return state;
+
             const isLastPopulatedRow = selectedIndex === items.length - 2 && items.length > 1 && !items[items.length - 1].width && !items[items.length-1].height;
 
             if (isLastPopulatedRow || items.length === 1) {
@@ -426,9 +427,6 @@ export function createRootReducer(dependencies) {
     const { productFactory, configManager } = dependencies;
 
     return function rootReducer(state, action) {
-<ins>
-        console.log('%c[ACTION]', 'color: #2e7fe6; font-weight: bold;', action);
-</ins>
         if (action.type.startsWith('ui/')) {
             const newUiState = uiReducer(state.ui, action);
             if (newUiState !== state.ui) {
