@@ -67,13 +67,9 @@ class App {
         eventAggregator.subscribe(EVENTS.STATE_CHANGED, (state) => {
             this.uiManager.render(state);
         });
-<ins>
-        console.log('[DEBUG] About to publish initial state. Current state:', JSON.parse(JSON.stringify(appController._getFullState())));
-</ins>
+
         appController.publishInitialState();
-<ins>
-        console.log('[DEBUG] Initial state has been published.');
-</ins>
+        
         this.inputHandler = new InputHandler(eventAggregator);
         this.inputHandler.initialize();
 
@@ -81,9 +77,6 @@ class App {
             // Re-introduce the timeout to allow the initial render to complete
             // before trying to focus a cell.
             setTimeout(() => {
-<ins>
-                console.log('[DEBUG] APP_READY event fired. Publishing FOCUS_CELL for row 0, column width.');
-</ins>
                 eventAggregator.publish(EVENTS.FOCUS_CELL, { rowIndex: 0, column: 'width' });
             }, 100);
         });
