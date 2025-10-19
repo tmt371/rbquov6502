@@ -19,7 +19,7 @@ export class InputHandler {
         this._setupPanelToggles();
         this._setupFileLoader();
         this._setupPhysicalKeyboard();
-
+        
         this.leftPanelHandler.initialize();
     }
 
@@ -28,7 +28,7 @@ export class InputHandler {
             if (event.target.matches('input:not([readonly])')) {
                 return;
             }
-
+            
             let keyToPublish = null;
             let eventToPublish = EVENTS.NUMERIC_KEY_PRESSED;
             const arrowKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
@@ -40,7 +40,7 @@ export class InputHandler {
             }
             if (event.key >= '0' && event.key <= '9') {
                 keyToPublish = event.key;
-            }
+            } 
             else {
                 switch (event.key.toLowerCase()) {
                     case 'w': keyToPublish = 'W'; break;
@@ -84,7 +84,7 @@ export class InputHandler {
             }
         });
     }
-
+    
     _setupPanelToggles() {
         const numericToggle = document.getElementById(DOM_IDS.PANEL_TOGGLE);
         if (numericToggle) {
@@ -108,7 +108,7 @@ export class InputHandler {
         setupButton('key-reset', EVENTS.USER_REQUESTED_RESET);
         setupButton(DOM_IDS.KEY_M_SET, EVENTS.USER_REQUESTED_MULTI_TYPE_SET);
     }
-
+    
     _setupNumericKeyboard() {
         const keyboard = document.getElementById(DOM_IDS.NUMERIC_KEYBOARD);
         if (!keyboard) return;
@@ -136,10 +136,10 @@ export class InputHandler {
             button.addEventListener('mouseleave', () => clearTimeout(this.longPressTimer));
             button.addEventListener('touchend', endPress);
         };
-
+        
         const addButtonListener = (id, eventName, data = {}) => {
             const button = document.getElementById(id);
-            if (button) {
+            if(button) {
                 if (id === 'key-type') {
                     addLongPressSupport(button, EVENTS.TYPE_BUTTON_LONG_PRESSED, EVENTS.USER_REQUESTED_CYCLE_TYPE, data);
                 } else {
@@ -161,7 +161,7 @@ export class InputHandler {
         addButtonListener('key-2', EVENTS.NUMERIC_KEY_PRESSED, { key: '2' });
         addButtonListener('key-3', EVENTS.NUMERIC_KEY_PRESSED, { key: '3' });
         addButtonListener('key-0', EVENTS.NUMERIC_KEY_PRESSED, { key: '0' });
-
+        
         // Function keys within the grid
         addButtonListener('key-w', EVENTS.NUMERIC_KEY_PRESSED, { key: 'W' });
         addButtonListener('key-h', EVENTS.NUMERIC_KEY_PRESSED, { key: 'H' });
@@ -188,7 +188,7 @@ export class InputHandler {
                     }, this.pressThreshold);
                 }
             };
-
+            
             const endPress = (e) => {
                 clearTimeout(this.longPressTimer);
 
@@ -200,14 +200,8 @@ export class InputHandler {
                         if (column && rowIndex) {
                             const eventData = { rowIndex: parseInt(rowIndex, 10), column };
                             if (column === 'sequence') {
-                                <ins>
-                                    console.log('[DEBUG-TRACE] InputHandler: Publishing SEQUENCE_CELL_CLICKED', eventData);
-                                </ins>
                                 this.eventAggregator.publish(EVENTS.SEQUENCE_CELL_CLICKED, eventData);
                             } else {
-                                <ins>
-                                    console.log('[DEBUG-TRACE] InputHandler: Publishing TABLE_CELL_CLICKED', eventData);
-                                </ins>
                                 this.eventAggregator.publish(EVENTS.TABLE_CELL_CLICKED, eventData);
                             }
                         }
@@ -216,19 +210,11 @@ export class InputHandler {
                 this.isLongPress = false;
             };
 
-            table.addEventListener('mousedown', startPress);
-            table.addEventListener('touchstart', startPress, { passive: false });
-
-            table.addEventListener('mouseup', endPress);
-
-            table.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                endPress(e);
-            });
-
-            table.addEventListener('mouseleave', () => {
+            table.addEventListener('pointerdown', startPress);
+            table.addEventListener('pointerup', endPress);
+            table.addEventListener('pointerleave', () => {
                 clearTimeout(this.longPressTimer);
-            }, true);
+            });
         }
     }
 }
