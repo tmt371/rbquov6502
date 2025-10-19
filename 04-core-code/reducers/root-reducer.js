@@ -53,9 +53,14 @@ function uiReducer(state, action) {
         case UI_ACTION_TYPES.CLEAR_INPUT_VALUE:
             return { ...state, inputValue: '' };
         case UI_ACTION_TYPES.TOGGLE_MULTI_SELECT_MODE: {
+            // [FIX] This action now ONLY toggles the mode and clears selections.
+            // It no longer automatically selects the active row, which was the root cause of the bug.
             const isEnteringMode = !state.isMultiSelectMode;
-            const newSelectedIndexes = isEnteringMode && state.activeCell && state.activeCell.rowIndex !== null ? [state.activeCell.rowIndex] : [];
-            return { ...state, isMultiSelectMode: isEnteringMode, multiSelectSelectedIndexes: newSelectedIndexes };
+            return {
+                ...state,
+                isMultiSelectMode: isEnteringMode,
+                multiSelectSelectedIndexes: [] // Always clear selections when toggling mode
+            };
         }
         case UI_ACTION_TYPES.TOGGLE_MULTI_SELECT_SELECTION: {
             const selectedIndexes = new Set(state.multiSelectSelectedIndexes);
