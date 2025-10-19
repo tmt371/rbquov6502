@@ -83,7 +83,7 @@ export class AppController {
             [EVENTS.SHOW_CONFIRMATION_DIALOG]: (data) => this.workflowService.showDialog(data.message, data.layout, data.position),
             [EVENTS.TRIGGER_FILE_LOAD]: () => this.workflowService.triggerFileLoad(),
             [EVENTS.FILE_LOADED]: (data) => this.workflowService.handleFileLoaded(data),
-            [EVENTS.HANDLE_K2_VALIDATION]: () => this.workflowService.handleK2ValidationAndTransition(),
+
         };
     }
 
