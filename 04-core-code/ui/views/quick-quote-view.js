@@ -27,9 +27,6 @@ export class QuickQuoteView {
     }
 
     handleSequenceCellClick({ rowIndex }) {
-<ins>
-        console.log(`[DEBUG] QuickQuoteView: handleSequenceCellClick called for rowIndex: ${rowIndex}`);
-</ins>
         const items = this._getItems();
         const item = items[rowIndex];
         const isLastRowEmpty = (rowIndex === items.length - 1) && (!item.width && !item.height);
@@ -218,27 +215,15 @@ export class QuickQuoteView {
     }
     
     handleTableCellClick({ rowIndex, column }) {
-<ins>
-        console.log(`[DEBUG] QuickQuoteView: handleTableCellClick called for row ${rowIndex}, column ${column}`);
-</ins>
         const item = this._getItems()[rowIndex];
         if (!item) return;
         
-<ins>
-        console.log('[DEBUG] QuickQuoteView: Dispatching CLEAR_MULTI_SELECT_SELECTION.');
-</ins>
         this.stateService.dispatch(uiActions.clearMultiSelectSelection());
 
         if (column === 'width' || column === 'height') {
-<ins>
-            console.log(`[DEBUG] QuickQuoteView: Click on W/H cell. Dispatching SET_ACTIVE_CELL and SET_INPUT_VALUE.`);
-</ins>
             this.stateService.dispatch(uiActions.setActiveCell(rowIndex, column));
             this.stateService.dispatch(uiActions.setInputValue(item[column]));
         } else if (column === 'TYPE') {
-<ins>
-            console.log(`[DEBUG] QuickQuoteView: Click on TYPE cell. Dispatching SET_ACTIVE_CELL and CYCLE_ITEM_TYPE.`);
-</ins>
             this.stateService.dispatch(uiActions.setActiveCell(rowIndex, column));
             this.stateService.dispatch(quoteActions.cycleItemType(rowIndex));
             this.stateService.dispatch(uiActions.setSumOutdated(true));
