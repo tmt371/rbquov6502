@@ -1,7 +1,7 @@
 // File: 04-core-code/main.js
 
 import { AppContext } from './app-context.js';
-import { EVENTS } from './config/constants.js';
+import { paths } from './config/paths.js'; // ✅ Correctly import paths directly
 import * as uiActions from './actions/ui-actions.js';
 
 class App {
@@ -10,7 +10,7 @@ class App {
     }
 
     async _loadPartials() {
-        const partialsConfig = this.appContext.get('paths').partials;
+        const partialsConfig = paths.partials; // ✅ Use the directly imported paths object
         const partialsContainer = document.getElementById('partials-container');
         if (!partialsContainer) {
             console.error('Partials container not found.');
@@ -47,7 +47,7 @@ class App {
             // Phase 3: Initialize UI components that depend on the DOM
             this.appContext.initializeUIComponents();
 
-            // [FIX] Per expert guidance, clear any lingering selections after UI initialization
+            // ✅ Per expert guidance, clear any lingering selections after UI initialization
             // and before the app becomes interactive. This is the root fix for the startup highlight bug.
             const stateService = this.appContext.get('stateService');
             stateService.dispatch(uiActions.clearMultiSelectSelection());
