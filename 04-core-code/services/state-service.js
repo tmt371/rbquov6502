@@ -33,7 +33,7 @@ export class StateService {
      */
     dispatch(action) {
         const newState = this.reducer(this._state, action);
-        
+
         // Only update and publish if the state has actually changed.
         if (newState !== this._state) {
             this._state = newState;
