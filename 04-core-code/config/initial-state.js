@@ -8,7 +8,7 @@
 export const initialState = {
     ui: {
         // --- SPA View Management ---
-        currentView: 'QUICK_QUOTE', 
+        currentView: 'QUICK_QUOTE',
         visibleColumns: ['sequence', 'width', 'height', 'TYPE', 'Price'],
         activeTabId: 'k1-tab',
 
@@ -16,7 +16,6 @@ export const initialState = {
         inputValue: '',
         inputMode: 'width',
         activeCell: { rowIndex: 0, column: 'width' },
-        selectedRowIndex: null,
         isMultiSelectMode: false,
         multiSelectSelectedIndexes: [],
 
@@ -24,7 +23,7 @@ export const initialState = {
         activeEditMode: null,
         targetCell: null,
         locationInputValue: '',
-        
+
         // --- K2 (Fabric/LF) State ---
         lfSelectedRowIndexes: [],
         // [REMOVED] lfModifiedRowIndexes is moved to quoteData.uiMetadata for persistence.
@@ -62,7 +61,7 @@ export const initialState = {
             dual_combo_qty: null,
             dual_slim_qty: null,
         },
-        
+
         // --- F2 Financial Summary State ---
         f2: {
             wifiQty: null, deliveryQty: null, installQty: null, removalQty: null,
@@ -83,14 +82,14 @@ export const initialState = {
         products: {
             rollerBlind: {
                 items: [
-                    { 
-                        itemId: `item-${Date.now()}`, 
+                    {
+                        itemId: `item-${Date.now()}`,
                         width: null, height: null, fabricType: null, linePrice: null,
                         location: '', fabric: '', color: '', over: '',
                         oi: '', lr: '', dual: '', chain: null, winder: '', motor: ''
                     }
                 ],
-                summary: { 
+                summary: {
                     totalSum: null,
                     accessories: {
                         winder: { count: 0, price: 0 },
@@ -116,7 +115,7 @@ export const initialState = {
         dueDate: null,
         status: "Configuring",
         costDiscountPercentage: 0,
-        customer: { 
+        customer: {
             name: "",
             address: "",
             phone: "",

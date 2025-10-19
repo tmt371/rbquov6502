@@ -9,9 +9,9 @@ const COLUMN_CONFIG = {
     width: { header: 'W', className: 'col-w', dataColumn: 'width', cellType: 'td' },
     height: { header: 'H', className: 'col-h', dataColumn: 'height', cellType: 'td' },
     TYPE: { header: 'TYPE', className: 'col-type', dataColumn: 'TYPE', cellType: 'td' },
-    Price: { 
-        header: (state) => `<input type="text" class="input-display-cell" id="input-display-cell" value="${state.ui.inputValue || ''}" readonly>`, 
-        className: 'input-display-header col-price', 
+    Price: {
+        header: (state) => `<input type="text" class="input-display-cell" id="input-display-cell" value="${state.ui.inputValue || ''}" readonly>`,
+        className: 'input-display-header col-price',
         dataColumn: 'Price',
         cellType: 'th'
     },
@@ -55,7 +55,7 @@ export class TableComponent {
 
             const cell = document.createElement(config.cellType);
             cell.className = config.className;
-            
+
             if (typeof config.header === 'function') {
                 cell.innerHTML = config.header(state);
             } else {
@@ -90,7 +90,7 @@ export class TableComponent {
                 const cell = row.insertCell();
                 cell.className = config.className;
                 cell.dataset.column = config.dataColumn;
-                
+
                 this._renderCellContent(cell, key, item, index, state);
             });
         });
@@ -117,21 +117,18 @@ export class TableComponent {
     _createCellRenderers() {
         return {
             sequence: (cell, item, index, state) => {
-                // [MODIFIED] Removed obsolete state flags 'selectedRowIndex' and 'isMultiSelectMode'
                 const { multiSelectSelectedIndexes, lfSelectedRowIndexes } = state.ui;
                 const currentProductKey = state.quoteData.currentProduct;
                 const items = state.quoteData.products[currentProductKey].items;
 
                 cell.textContent = index + 1;
                 const isLastRowEmpty = (index === items.length - 1) && (!item.width && !item.height);
-                
-                // [MODIFIED] Simplified highlighting logic to rely only on multiSelectSelectedIndexes
+
                 if (lfSelectedRowIndexes.includes(index)) {
                     cell.classList.add('lf-selection-highlight');
                 } else if (isLastRowEmpty) {
                     cell.classList.add('selection-disabled');
                 } else if (multiSelectSelectedIndexes.includes(index)) {
-                    // Use a single, consistent class for any selection (single or multi)
                     cell.classList.add('selected-row-highlight');
                 }
             },
@@ -148,7 +145,7 @@ export class TableComponent {
             TYPE: (cell, item, index, state) => {
                 const { activeCell } = state.ui;
                 cell.textContent = (item.width || item.height) ? (item.fabricType || '') : '';
-                
+
                 const typeClassMap = {
                     'B2': 'type-b2', 'B3': 'type-b3', 'B4': 'type-b4',
                     'B5': 'type-b5', 'SN': 'type-sn'

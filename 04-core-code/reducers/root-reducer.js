@@ -30,7 +30,7 @@ function _consolidateEmptyRows(items, productFactory, productKey) {
         const productStrategy = productFactory.getProductStrategy(productKey);
         newItems.push(productStrategy.getInitialItemData());
     }
-    
+
     return newItems;
 }
 
@@ -54,8 +54,8 @@ function uiReducer(state, action) {
             return { ...state, inputValue: '' };
         case UI_ACTION_TYPES.TOGGLE_MULTI_SELECT_MODE: {
             const isEnteringMode = !state.isMultiSelectMode;
-            const newSelectedIndexes = isEnteringMode && state.selectedRowIndex !== null ? [state.selectedRowIndex] : [];
-            return { ...state, isMultiSelectMode: isEnteringMode, multiSelectSelectedIndexes: newSelectedIndexes, selectedRowIndex: null };
+            const newSelectedIndexes = isEnteringMode && state.activeCell && state.activeCell.rowIndex !== null ? [state.activeCell.rowIndex] : [];
+            return { ...state, isMultiSelectMode: isEnteringMode, multiSelectSelectedIndexes: newSelectedIndexes };
         }
         case UI_ACTION_TYPES.TOGGLE_MULTI_SELECT_SELECTION: {
             const selectedIndexes = new Set(state.multiSelectSelectedIndexes);
@@ -104,7 +104,7 @@ function uiReducer(state, action) {
         case UI_ACTION_TYPES.SET_DRIVE_ACCESSORY_TOTAL_PRICE: {
             const { accessory, price } = action.payload;
             const newUi = { ...state };
-            switch(accessory) {
+            switch (accessory) {
                 case 'winder': newUi.driveWinderTotalPrice = price; break;
                 case 'motor': newUi.driveMotorTotalPrice = price; break;
                 case 'remote': newUi.driveRemoteTotalPrice = price; break;
@@ -171,7 +171,7 @@ function quoteReducer(state, action, { productFactory, configManager }) {
 
         case QUOTE_ACTION_TYPES.RESET_QUOTE_DATA:
             return JSON.parse(JSON.stringify(initialState.quoteData));
-        
+
         case QUOTE_ACTION_TYPES.INSERT_ROW: {
             items = [...productData.items];
             const productStrategy = productFactory.getProductStrategy(productKey);
@@ -187,7 +187,7 @@ function quoteReducer(state, action, { productFactory, configManager }) {
             const itemToDelete = items[selectedIndex];
             if (!itemToDelete) return state;
 
-            const isLastPopulatedRow = selectedIndex === items.length - 2 && items.length > 1 && !items[items.length - 1].width && !items[items.length-1].height;
+            const isLastPopulatedRow = selectedIndex === items.length - 2 && items.length > 1 && !items[items.length - 1].width && !items[items.length - 1].height;
 
             if (isLastPopulatedRow || items.length === 1) {
                 const productStrategy = productFactory.getProductStrategy(productKey);
@@ -201,7 +201,7 @@ function quoteReducer(state, action, { productFactory, configManager }) {
             productData = { ...productData, items };
             return { ...state, products: { ...state.products, [productKey]: productData } };
         }
-        
+
         case QUOTE_ACTION_TYPES.CLEAR_ROW: {
             items = [...productData.items];
             const { selectedIndex } = action.payload;
@@ -222,7 +222,7 @@ function quoteReducer(state, action, { productFactory, configManager }) {
             const { rowIndex, column, value } = action.payload;
             const targetItem = items[rowIndex];
             if (!targetItem || targetItem[column] === value) return state;
-            
+
             const newItem = { ...targetItem, [column]: value };
 
             if ((column === 'width' || column === 'height') && newItem.width && newItem.height) {
@@ -236,7 +236,7 @@ function quoteReducer(state, action, { productFactory, configManager }) {
             productData = { ...productData, items };
             return { ...state, products: { ...state.products, [productKey]: productData } };
         }
-        
+
         case QUOTE_ACTION_TYPES.BATCH_UPDATE_PROPERTY: {
             items = productData.items.map((item, index) => {
                 if (index === productData.items.length - 1) {
@@ -270,7 +270,7 @@ function quoteReducer(state, action, { productFactory, configManager }) {
             productData = { ...productData, items };
             return { ...state, products: { ...state.products, [productKey]: productData } };
         }
-        
+
         case QUOTE_ACTION_TYPES.UPDATE_WINDER_MOTOR_PROPERTY: {
             items = [...productData.items];
             const { rowIndex, property, value } = action.payload;
@@ -280,7 +280,7 @@ function quoteReducer(state, action, { productFactory, configManager }) {
             const newItem = { ...item, [property]: value };
             if (property === 'winder' && value) newItem.motor = '';
             if (property === 'motor' && value) newItem.winder = '';
-            
+
             items[rowIndex] = newItem;
             productData = { ...productData, items };
             return { ...state, products: { ...state.products, [productKey]: productData } };
@@ -341,7 +341,7 @@ function quoteReducer(state, action, { productFactory, configManager }) {
                 newItems = items;
             } else if (action.type === QUOTE_ACTION_TYPES.BATCH_UPDATE_FABRIC_TYPE) {
                 let { newType } = action.payload;
-                if (newType === undefined) { 
+                if (newType === undefined) {
                     const firstItem = items.find(item => item.width && item.height);
                     const currentType = firstItem ? (firstItem.fabricType || TYPE_SEQUENCE[TYPE_SEQUENCE.length - 1]) : TYPE_SEQUENCE[TYPE_SEQUENCE.length - 1];
                     const currentIndex = TYPE_SEQUENCE.indexOf(currentType);
@@ -417,7 +417,7 @@ function quoteReducer(state, action, { productFactory, configManager }) {
             productData = { ...productData, summary: newSummary };
             return { ...state, products: { ...state.products, [productKey]: productData } };
         }
-        
+
         default:
             return state;
     }

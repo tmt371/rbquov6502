@@ -8,14 +8,14 @@ import * as quoteActions from '../../actions/quote-actions.js';
  * @fileoverview A view class responsible for all logic related to the main "Quick Quote" screen.
  */
 export class QuickQuoteView {
-    constructor({ 
-        stateService, 
-        calculationService, 
-        focusService, 
-        fileService, 
-        eventAggregator, 
-        productFactory, 
-        configManager 
+    constructor({
+        stateService,
+        calculationService,
+        focusService,
+        fileService,
+        eventAggregator,
+        productFactory,
+        configManager
     }) {
         this.stateService = stateService;
         this.calculationService = calculationService;
@@ -35,7 +35,7 @@ export class QuickQuoteView {
         const { quoteData } = this._getState();
         return quoteData.products[quoteData.currentProduct].items;
     }
-    
+
     _getCurrentProductType() {
         const { quoteData } = this._getState();
         return quoteData.currentProduct;
@@ -98,10 +98,10 @@ export class QuickQuoteView {
         const nextItem = items[selectedIndex + 1];
 
         if (nextItem && (!nextItem.width && !nextItem.height && !nextItem.fabricType)) {
-             this.eventAggregator.publish(EVENTS.SHOW_NOTIFICATION, { message: 'You can only insert a row above a row that contains data.' });
+            this.eventAggregator.publish(EVENTS.SHOW_NOTIFICATION, { message: 'You can only insert a row above a row that contains data.' });
             return;
         }
-        
+
         this.stateService.dispatch(quoteActions.insertRow(selectedIndex));
         this.stateService.dispatch(uiActions.setActiveCell(selectedIndex + 1, 'width'));
         this.stateService.dispatch(uiActions.clearMultiSelectSelection());
@@ -115,7 +115,7 @@ export class QuickQuoteView {
             this.eventAggregator.publish(EVENTS.SHOW_NOTIFICATION, { message: 'Please select one or more rows to delete.' });
             return;
         }
-        
+
         this.stateService.dispatch(quoteActions.deleteMultipleRows(multiSelectSelectedIndexes));
         this.focusService.focusAfterDelete();
     }
@@ -124,7 +124,7 @@ export class QuickQuoteView {
         const { ui } = this._getState();
         const { multiSelectSelectedIndexes } = ui;
         if (multiSelectSelectedIndexes.length !== 1) return;
-        
+
         this.stateService.dispatch(quoteActions.clearRow(multiSelectSelectedIndexes[0]));
         this.focusService.focusAfterClear();
     }
@@ -145,11 +145,13 @@ export class QuickQuoteView {
         this.eventAggregator.publish(EVENTS.SHOW_CONFIRMATION_DIALOG, {
             message: 'Are you sure you want to clear all data and start a new quote?',
             layout: [[
-                { type: 'button', text: 'Confirm Reset', callback: () => {
-                    this.stateService.dispatch(quoteActions.resetQuoteData());
-                    this.stateService.dispatch(uiActions.resetUi());
-                }},
-                { type: 'button', text: 'Cancel', className: 'secondary', callback: () => {} }
+                {
+                    type: 'button', text: 'Confirm Reset', callback: () => {
+                        this.stateService.dispatch(quoteActions.resetQuoteData());
+                        this.stateService.dispatch(uiActions.resetUi());
+                    }
+                },
+                { type: 'button', text: 'Cancel', className: 'secondary', callback: () => { } }
             ]]
         });
     }
@@ -157,14 +159,14 @@ export class QuickQuoteView {
     handleMoveActiveCell({ direction }) {
         this.focusService.moveActiveCell(direction);
     }
-    
+
     handleCalculateAndSum() {
         const { quoteData } = this._getState();
         const productStrategy = this.productFactory.getProductStrategy(this._getCurrentProductType());
         const { updatedQuoteData, firstError } = this.calculationService.calculateAndSum(quoteData, productStrategy);
 
         this.stateService.dispatch(quoteActions.setQuoteData(updatedQuoteData));
-        
+
         if (firstError) {
             this.stateService.dispatch(uiActions.setSumOutdated(true));
             this.eventAggregator.publish(EVENTS.SHOW_NOTIFICATION, { message: firstError.message, type: 'error' });
@@ -177,7 +179,7 @@ export class QuickQuoteView {
     handleTableCellClick({ rowIndex, column }) {
         this.stateService.dispatch(uiActions.setActiveCell(rowIndex, column));
         this.stateService.dispatch(uiActions.clearMultiSelectSelection());
-        
+
         const item = this._getItems()[rowIndex];
         if (item && (column === 'width' || column === 'height')) {
             this.stateService.dispatch(uiActions.setInputValue(item[column]));
@@ -185,11 +187,11 @@ export class QuickQuoteView {
             this.stateService.dispatch(uiActions.setInputValue(''));
         }
     }
-    
+
     handleSequenceCellClick({ rowIndex }) {
         this.stateService.dispatch(uiActions.toggleMultiSelectSelection(rowIndex));
     }
-    
+
     handleCycleType() {
         const { ui } = this._getState();
         const { activeCell } = ui;
@@ -207,7 +209,7 @@ export class QuickQuoteView {
         this.handleSaveToFile();
         this.eventAggregator.publish(EVENTS.TRIGGER_FILE_LOAD);
     }
-    
+
     handleTypeCellLongPress({ rowIndex }) {
         this.stateService.dispatch(uiActions.clearMultiSelectSelection());
         this.stateService.dispatch(uiActions.toggleMultiSelectSelection(rowIndex));
@@ -221,7 +223,7 @@ export class QuickQuoteView {
     handleMultiTypeSet() {
         const { ui } = this._getState();
         const { multiSelectSelectedIndexes } = ui;
-        
+
         if (multiSelectSelectedIndexes.length === 0) {
             this.eventAggregator.publish(EVENTS.SHOW_NOTIFICATION, { message: "Please select one or more rows first by clicking on their sequence numbers ('#')." });
             return;
@@ -234,15 +236,13 @@ export class QuickQuoteView {
                 type: 'button',
                 text: type,
                 callback: () => {
-                    multiSelectSelectedIndexes.forEach(index => {
-                        this.stateService.dispatch(quoteActions.setItemType(index, type));
-                    });
+                    this.stateService.dispatch(quoteActions.batchUpdateFabricTypeForSelection(multiSelectSelectedIndexes, type));
                     this.stateService.dispatch(uiActions.setSumOutdated(true));
                     this.stateService.dispatch(uiActions.clearMultiSelectSelection());
                 }
             });
         });
-        
+
         this.eventAggregator.publish(EVENTS.SHOW_CONFIRMATION_DIALOG, {
             message: `Set fabric type for selected rows (${multiSelectSelectedIndexes.length}):`,
             layout: layout,
