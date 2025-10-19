@@ -43,9 +43,6 @@ function uiReducer(state, action) {
         case UI_ACTION_TYPES.SET_ACTIVE_TAB:
             return { ...state, activeTabId: action.payload.tabId };
         case UI_ACTION_TYPES.SET_ACTIVE_CELL:
-<ins>
-            console.log('[DEBUG-TRACE] Reducer: SET_ACTIVE_CELL', { payload: action.payload, beforeState: JSON.parse(JSON.stringify(state)) });
-</ins>
             return { ...state, activeCell: action.payload, inputMode: action.payload.column };
         case UI_ACTION_TYPES.SET_INPUT_VALUE:
             return { ...state, inputValue: String(action.payload.value || '') };
@@ -61,30 +58,16 @@ function uiReducer(state, action) {
             return { ...state, isMultiSelectMode: isEnteringMode, multiSelectSelectedIndexes: newSelectedIndexes, selectedRowIndex: null };
         }
         case UI_ACTION_TYPES.TOGGLE_MULTI_SELECT_SELECTION: {
-<ins>
-            console.log('[DEBUG-TRACE] Reducer: TOGGLE_MULTI_SELECT_SELECTION', { payload: action.payload, beforeState: JSON.parse(JSON.stringify(state)) });
-</ins>
             const selectedIndexes = new Set(state.multiSelectSelectedIndexes);
             if (selectedIndexes.has(action.payload.rowIndex)) {
                 selectedIndexes.delete(action.payload.rowIndex);
             } else {
                 selectedIndexes.add(action.payload.rowIndex);
             }
-            const newState = { ...state, multiSelectSelectedIndexes: Array.from(selectedIndexes) };
-<ins>
-            console.log('[DEBUG-TRACE] Reducer: TOGGLE_MULTI_SELECT_SELECTION', { afterState: JSON.parse(JSON.stringify(newState)) });
-</ins>
-            return newState;
+            return { ...state, multiSelectSelectedIndexes: Array.from(selectedIndexes) };
         }
         case UI_ACTION_TYPES.CLEAR_MULTI_SELECT_SELECTION:
-<ins>
-            console.log('[DEBUG-TRACE] Reducer: CLEAR_MULTI_SELECT_SELECTION', { beforeState: JSON.parse(JSON.stringify(state)) });
-</ins>
-            const newState = { ...state, multiSelectSelectedIndexes: [] };
-<ins>
-            console.log('[DEBUG-TRACE] Reducer: CLEAR_MULTI_SELECT_SELECTION', { afterState: JSON.parse(JSON.stringify(newState)) });
-</ins>
-            return newState;
+            return { ...state, multiSelectSelectedIndexes: [] };
         case UI_ACTION_TYPES.SET_ACTIVE_EDIT_MODE:
             return { ...state, activeEditMode: action.payload.mode };
         case UI_ACTION_TYPES.SET_TARGET_CELL:
@@ -203,6 +186,7 @@ function quoteReducer(state, action, { productFactory, configManager }) {
             const { selectedIndex } = action.payload;
             const itemToDelete = items[selectedIndex];
             if (!itemToDelete) return state;
+
             const isLastPopulatedRow = selectedIndex === items.length - 2 && items.length > 1 && !items[items.length - 1].width && !items[items.length-1].height;
 
             if (isLastPopulatedRow || items.length === 1) {

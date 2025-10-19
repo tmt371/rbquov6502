@@ -200,14 +200,8 @@ export class InputHandler {
                         if (column && rowIndex) {
                             const eventData = { rowIndex: parseInt(rowIndex, 10), column };
                             if (column === 'sequence') {
-<ins>
-                                console.log('[DEBUG-TRACE] InputHandler: Publishing SEQUENCE_CELL_CLICKED', eventData);
-</ins>
                                 this.eventAggregator.publish(EVENTS.SEQUENCE_CELL_CLICKED, eventData);
                             } else {
-<ins>
-                                console.log('[DEBUG-TRACE] InputHandler: Publishing TABLE_CELL_CLICKED', eventData);
-</ins>
                                 this.eventAggregator.publish(EVENTS.TABLE_CELL_CLICKED, eventData);
                             }
                         }
