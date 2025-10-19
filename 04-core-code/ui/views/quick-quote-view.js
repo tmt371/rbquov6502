@@ -177,12 +177,9 @@ export class QuickQuoteView {
     }
 
     handleTableCellClick({ rowIndex, column }) {
-        if (column === 'sequence') {
-            return;
-        }
-
-        this.stateService.dispatch(uiActions.setActiveCell(rowIndex, column));
+        // This is the key change: always clear selections when a non-sequence cell is clicked.
         this.stateService.dispatch(uiActions.clearMultiSelectSelection());
+        this.stateService.dispatch(uiActions.setActiveCell(rowIndex, column));
 
         const item = this._getItems()[rowIndex];
         if (item && (column === 'width' || column === 'height')) {
@@ -193,15 +190,6 @@ export class QuickQuoteView {
     }
 
     handleSequenceCellClick({ rowIndex }) {
-        const items = this._getItems();
-        const item = items[rowIndex];
-        const isLastRowEmpty = (rowIndex === items.length - 1) && (!item.width && !item.height);
-
-        if (isLastRowEmpty) {
-            return;
-        }
-
-        // Toggle selection for valid rows (allows multi-select)
         this.stateService.dispatch(uiActions.toggleMultiSelectSelection(rowIndex));
     }
 
