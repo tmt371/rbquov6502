@@ -1,39 +1,40 @@
 // File: 04-core-code/app-controller.js
 
-import { EVENTS } from './config/constants.js';
+import { EVENTS } from "./config/constants.js"
+import * as uiActions from "./actions/ui-actions.js"
 
 /**
  * @fileoverview Central application controller.
  * Manages the overall application flow and interactions between different components.
  */
 export class AppController {
-    constructor({ eventAggregator, stateService, uiManager, quickQuoteView, detailConfigView, workflowService }) {
-        this.eventAggregator = eventAggregator;
-        this.stateService = stateService;
-        this.uiManager = uiManager;
-        this.quickQuoteView = quickQuoteView;
-        this.detailConfigView = detailConfigView;
-        this.workflowService = workflowService;
+    constructor({ eventAggregator, stateService, quickQuoteView, detailConfigView, workflowService }) {
+        this.eventAggregator = eventAggregator
+        this.stateService = stateService
+        this.quickQuoteView = quickQuoteView
+        this.detailConfigView = detailConfigView
+        this.workflowService = workflowService
 
-        this._subscribeToEvents();
-        console.log("AppController (Refactored with grouped subscriptions) Initialized.");
+        this._subscribeToEvents()
+        console.log("AppController (Refactored with grouped subscriptions) Initialized.")
     }
 
     _subscribeToEvents() {
         const eventSubscriptions = {
-            [EVENTS.STATE_CHANGED]: () => this.uiManager.render(this.stateService.getState()),
-            [EVENTS.SAVE_STATE]: () => this.stateService.saveState(),
             [EVENTS.APP_READY]: () => {
                 setTimeout(() => {
-                    this.eventAggregator.publish(EVENTS.FOCUS_CELL, { rowIndex: 0, column: 'width' });
-                }, 100);
+                    this.eventAggregator.publish(EVENTS.FOCUS_CELL, { rowIndex: 0, column: "width" })
+                }, 100)
+            },
+            [EVENTS.FOCUS_CELL]: (data) => {
+                this.stateService.dispatch(uiActions.setActiveCell(data.rowIndex, data.column))
             },
             ...this._getViewEventSubscriptions(),
-            ...this._getWorkflowEventSubscriptions()
-        };
+            ...this._getWorkflowEventSubscriptions(),
+        }
 
         for (const event in eventSubscriptions) {
-            this.eventAggregator.subscribe(event, eventSubscriptions[event]);
+            this.eventAggregator.subscribe(event, eventSubscriptions[event])
         }
     }
 
@@ -73,21 +74,20 @@ export class AppController {
             [EVENTS.F1_INPUT_CHANGED]: (data) => this.detailConfigView.handleF1InputChange(data),
             [EVENTS.F2_INPUT_CHANGED]: (data) => this.detailConfigView.handleF2InputChange(data),
             [EVENTS.F2_CHECKBOX_CLICKED]: (data) => this.detailConfigView.handleF2CheckboxClick(data),
-        };
+        }
     }
 
     _getWorkflowEventSubscriptions() {
         return {
-            [EVENTS.FOCUS_CELL]: (data) => this.workflowService.focusCell(data),
             [EVENTS.SHOW_NOTIFICATION]: (data) => this.workflowService.showNotification(data.message, data.type),
-            [EVENTS.SHOW_CONFIRMATION_DIALOG]: (data) => this.workflowService.showDialog(data.message, data.layout, data.position),
+            [EVENTS.SHOW_CONFIRMATION_DIALOG]: (data) =>
+                this.workflowService.showDialog(data.message, data.layout, data.position),
             [EVENTS.TRIGGER_FILE_LOAD]: () => this.workflowService.triggerFileLoad(),
             [EVENTS.FILE_LOADED]: (data) => this.workflowService.handleFileLoaded(data),
-
-        };
+        }
     }
 
     run() {
-        this.eventAggregator.publish(EVENTS.APP_READY);
+        this.eventAggregator.publish(EVENTS.APP_READY)
     }
 }
